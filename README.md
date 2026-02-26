@@ -46,6 +46,8 @@ Note: the `Dockerfile` downloads a pinned Codex release (`CODEX_VERSION` build a
 
 ## Deploy On Railway (Recommended)
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy?template=https://github.com/grahama1970/FastClaw)
+
 1. Create a new Railway project from this repo.
 2. Add a **Volume** mounted at `/data` (required for persistence).
    - Keep replicas at **1**. This template uses SQLite on the mounted volume and is intended to run single-replica.
@@ -68,6 +70,45 @@ After deploy:
 - Slack interactive endpoint is `POST /slack/actions` (optional, for approval buttons)
 - Telegram webhook endpoint is `POST /telegram/webhook`
 - Dashboard is `GET /admin` (Basic Auth: `admin:<ADMIN_PASSWORD>`)
+
+## One-Click Install From Google Pixel (Android)
+
+If your Pixel is your primary device, the fastest “one-click” path is Railway deploy + mobile browser setup.
+
+1. Open this repo in Chrome on your Pixel and tap **Deploy on Railway** above.
+2. Log in to Railway and create a project from the template.
+3. Add a persistent volume mounted to `/data`.
+4. Add required env vars:
+   - `ADMIN_PASSWORD`
+   - `OPENAI_API_KEY` (or plan to use `/admin/auth` device login)
+   - Slack and/or Telegram credentials (if you’re enabling those integrations)
+5. Deploy once and wait for green health checks.
+6. Open `https://<your-service-domain>/admin` in mobile Chrome, sign in, and finish setup.
+
+### Pixel Home-Screen App (PWA-style)
+
+To make FastClaw feel “installed” on your phone:
+
+1. Open your `/admin` URL in Chrome.
+2. Tap **⋮ menu → Add to Home screen**.
+3. Launch FastClaw from your home screen like an app.
+
+### Optional: Telegram-only in under 5 minutes
+
+If you want the quickest mobile-first bot test:
+
+1. Create a bot with `@BotFather` and copy the token.
+2. Set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_WEBHOOK_SECRET` in Railway.
+3. In `/admin/settings`, enable Telegram.
+4. Run the webhook command from any shell:
+
+```bash
+curl -sS "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" \
+  -d "url=https://<your-service-domain>/telegram/webhook" \
+  -d "secret_token=${TELEGRAM_WEBHOOK_SECRET}"
+```
+
+That flow gives you a practical one-tap daily experience on Pixel while hosting the heavy runtime in the cloud.
 
 ## Slack App Setup (Bring Your Own App)
 
